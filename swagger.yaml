@@ -1,16 +1,12 @@
 swagger: '2.0'
-
 info:
-  version: "1.0.0"
+  version: 1.0.0
   title: Muscle Camp
-
 paths:
   /users:
-  
     post:
       description: |
         ユーザ登録
-
       parameters:
         - name: body
           in: body
@@ -20,7 +16,7 @@ paths:
               icon:
                 type: string
                 format: byte
-                example: ""
+                example: ''
               identity:
                 type: string
                 example: kinnniku
@@ -34,9 +30,8 @@ paths:
                 type: string
                 format: password
                 example: password
-
       responses:
-        200:
+        '200':
           description: ユーザ登録成否
           schema:
             type: object
@@ -44,22 +39,18 @@ paths:
               result:
                 type: boolean
                 example: true
-                
-  /users/{id}:
-  
+  '/users/{id}':
     get:
       description: |
         ユーザ情報取得
-
       parameters:
         - name: id
           in: path
           description: ユーザ名
           required: true
           type: string
-                
       responses:
-        200:
+        '200':
           description: Successful responses
           schema:
             type: object
@@ -67,7 +58,7 @@ paths:
               icon:
                 type: string
                 format: byte
-                example: ""
+                example: ''
               identity:
                 type: string
                 example: kinnniku
@@ -80,14 +71,12 @@ paths:
     post:
       description: |
         ユーザ情報編集
-      
       parameters:
         - name: id
           in: path
           description: ユーザ名
           required: true
           type: string
-          
         - name: body
           in: body
           schema:
@@ -96,7 +85,7 @@ paths:
               icon:
                 type: string
                 format: byte
-                example: ""
+                example: ''
               identity:
                 type: string
                 example: kinnniku
@@ -110,11 +99,9 @@ paths:
                 type: string
                 format: password
                 example: password
-                
       responses:
-        200:
+        '200':
           description: Successful responses
-          
     delete:
       description: ユーザ削除
       parameters:
@@ -123,9 +110,8 @@ paths:
           description: ユーザ名
           required: true
           type: string
-          
       responses:
-        200:
+        '200':
           description: ユーザ削除成否
           schema:
             type: object
@@ -133,11 +119,9 @@ paths:
               result:
                 type: boolean
                 example: true
-                
   /muscle_posts:
     post:
       description: 投稿
-      
       parameters:
         - name: body
           in: body
@@ -153,19 +137,15 @@ paths:
               body:
                 type: string
                 example: 腕立て千回
-              body_name: 
+              body_name:
                 type: string
                 example: 腕
-                
       responses:
-          200:
-            description: Successful responses
-          
-  /mucle_posts/{id}:
-  
+        '200':
+          description: Successful responses
+  '/mucle_posts/{id}':
     get:
       description: 投稿取得
-      
       parameters:
         - name: id
           in: path
@@ -173,9 +153,8 @@ paths:
           required: true
           type: integer
           format: int32
-                
       responses:
-        200:
+        '200':
           description: Successful responses
           schema:
             type: object
@@ -183,7 +162,7 @@ paths:
               icon:
                 type: string
                 format: byte
-                example: ""
+                example: ''
               identity:
                 type: string
                 example: kinnniku
@@ -196,13 +175,11 @@ paths:
               body:
                 type: string
                 example: 腕立て千回
-              body_name: 
+              body_name:
                 type: string
                 example: 腕
-      
-    post:
+    put:
       description: 投稿編集
-      
       parameters:
         - name: id
           in: path
@@ -210,7 +187,6 @@ paths:
           required: true
           type: integer
           format: int32
-          
         - name: body
           in: body
           schema:
@@ -225,12 +201,11 @@ paths:
               body:
                 type: string
                 example: 腕立て千回
-              body_name: 
+              body_name:
                 type: string
                 example: 腕
-                  
       responses:
-        200:
+        '200':
           description: 投稿編集成否
           schema:
             type: object
@@ -238,8 +213,22 @@ paths:
               result:
                 type: boolean
                 example: true
-  
-    
-    
-
-    
+    delete:
+      description: 投稿削除
+      parameters:
+        - name: id
+          in: path
+          description: 投稿id
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: 投稿削除成否
+          schema:
+            type: object
+            properties:
+              result:
+                type: boolean
+                example: true
+                
