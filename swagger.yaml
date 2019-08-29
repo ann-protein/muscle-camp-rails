@@ -172,7 +172,7 @@ paths:
                     body:
                       type: string
                       example: 腕立て千回
-                    body_names:
+                    body_parts:
                       type: array
                       items:
                         type: string
@@ -196,7 +196,7 @@ paths:
               body:
                 type: string
                 example: 腕立て千回
-              body_names:
+              body_parts:
                 type: array
                 items:
                   type: string
@@ -241,7 +241,7 @@ paths:
               body:
                 type: string
                 example: 腕立て千回
-              body_names:
+              body_parts:
                 type: array
                 items:
                   type: string
@@ -272,7 +272,7 @@ paths:
               body:
                 type: string
                 example: 腕立て千回
-              body_names:
+              body_parts:
                 type: array
                 items:
                   type: string
