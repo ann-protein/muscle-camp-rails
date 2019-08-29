@@ -15,7 +15,7 @@ class MusclePostsController < ApplicationController
                  .select("users.icon, users.identity, users.name, muscle_posts.*, body_parts.name")
 
     # 整形
-    temp_hash = data_formation(result)
+    temp_hash = muscle_post_data_formation(result)
     responses = []
     for muscle_post_id in muscle_post_id_ary
       responses.push(temp_hash[muscle_post_id])
@@ -25,8 +25,8 @@ class MusclePostsController < ApplicationController
     render :json => responses.to_json
   end
 
-  def getpost
-    # 要求数取得
+  def get_muscle_post
+    # id取得
     muscle_post_id = params[:id]
 
     # データを取得
@@ -36,12 +36,12 @@ class MusclePostsController < ApplicationController
 
     # データ存在しないとき、[]を返す
     if result.blank?
-      render :json => []
+      render :json => [], :status => 404
       return
     end
 
     # 整形
-    temp_hash = data_formation(result)
+    temp_hash = muscle_post_data_formation(result)
     responses = [temp_hash[muscle_post_id.to_i]]
 
     # レスポンスを返す
@@ -50,7 +50,7 @@ class MusclePostsController < ApplicationController
 
   private
   # 整形
-  def data_formation(result)
+  def muscle_post_data_formation(result)
     temp_hash = {}
     for r in result
       if temp_hash.has_key?(r.id)
