@@ -22,7 +22,7 @@ class MusclePostsController < ApplicationController
         temp_hash[r.id]['body_parts'].push(r.name)
         next
       end
-      temp_hash[r.id] = {}
+      # temp_hash[r.id] = {}
       temp_hash[r.id] = {}
       temp_hash[r.id]['icon'] = r.icon
       temp_hash[r.id]['identity'] = r.identity
