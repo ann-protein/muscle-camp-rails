@@ -48,8 +48,44 @@ class MusclePostsController < ApplicationController
     render :json => responses.to_json
   end
 
+  def create_muscle_post
+    # パラメータを検証
+    unless params[:identity].is_a? String
+      render :json => {"error_msg":"value for key 'identity' should be a string"}, status: 422 and return
+    end
+    unless params[:body_parts].is_a? Array
+      render :json => {"error_msg":"value for key 'body_parts' should be an array"}, status: 422 and return
+    end
+
+    # userの存在を検証
+    user = User.find_by(identity: params[:identity])
+    if user.nil?
+      render :json => {"error_msg":"User dont exist"}, status: 422 and return
+    end
+
+    # Create MusclePost without committing
+    muscle_post = user.muscle_posts.new(muscle_post_params)
+
+    # body_partsの存在を検証
+    if params.has_key?(:body_parts)
+      body_parts = BodyPart.where(name: params[:body_parts])
+      if body_parts.count != params[:body_parts].length
+        render :json => {"error_msg":"body_parts data false"}, status: 422 and return
+      end
+      muscle_post.body_parts << body_parts
+    end
+
+    # MusclePostのデータを検証
+    unless muscle_post.save
+      render :json => {'error_msg':"MusclePost data false,you should check 'title' and 'body'"}, status: 422 and return
+    end
+
+    render :text => ""
+
+  end
+
   private
-  # 整形
+  # データ整形
   def muscle_post_data_formation(result)
     temp_hash = {}
     for r in result
@@ -67,4 +103,9 @@ class MusclePostsController < ApplicationController
     end
     temp_hash
   end
+
+  def muscle_post_params
+    params.permit(:title,:body)
+  end
+
 end
