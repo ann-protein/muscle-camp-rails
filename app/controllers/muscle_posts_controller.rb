@@ -53,8 +53,8 @@ class MusclePostsController < ApplicationController
     unless params[:identity].is_a? String
       render :json => {"error_msg":"value for key 'identity' should be a string"}, status: 422 and return
     end
-    unless params[:body_parts].is_a? Array
-      render :json => {"error_msg":"value for key 'body_parts' should be an array"}, status: 422 and return
+    unless params[:body_parts].is_a? Array and params[:body_parts].all? { |x| x.is_a? String }
+      render :json => {"error_msg":"value for key 'body_parts' should be an array of string"}, status: 422 and return
     end
 
     # userの存在を検証
@@ -69,7 +69,7 @@ class MusclePostsController < ApplicationController
     # body_partsの存在を検証
     if params.has_key?(:body_parts)
       body_parts = BodyPart.where(name: params[:body_parts])
-      if body_parts.count != params[:body_parts].length
+      unless body_parts.pluck(:name).sort == params[:body_parts].sort
         render :json => {"error_msg":"body_parts data false"}, status: 422 and return
       end
       muscle_post.body_parts << body_parts
@@ -80,7 +80,7 @@ class MusclePostsController < ApplicationController
       render :json => {'error_msg':"MusclePost data false,you should check 'title' and 'body'"}, status: 422 and return
     end
 
-    render :text => ""
+    render :json => {"result":true}
 
   end
 
