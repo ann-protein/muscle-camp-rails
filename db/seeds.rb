@@ -5,6 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+MusclePost.delete_all
+TagMap.delete_all
+User.delete_all
+BodyPart.delete_all
+
+
 User.create!(
     [
         {
@@ -12,6 +19,7 @@ User.create!(
             "identity": "takaishi",
             "introduction": "チーフ",
             "name": "高石",
+            "email": "takaish@ynu.jp",
             "password": "kazuki",
             "unsubscribed": false
         },
@@ -20,7 +28,8 @@ User.create!(
             "identity": "ozaki",
             "introduction": "次期チーフ筆頭候補",
             "name": "OZAKI",
-            "password": "yu",
+            "email": "ozaki@ynu.jp",
+            "password": "yuyuyuyuy",
             "unsubscribed": false
         },
         {
@@ -28,8 +37,9 @@ User.create!(
             "identity": "shiga",
             "introduction": "帰宅部",
             "name": "SHIGASHI",
-            "password": "yuya",
-            "unsubscribed": false
+            "email": "shiga@ynu.jp",
+            "password": "yuyayuya",
+            "unsubscribed": true
         }
     ]
 )
@@ -103,4 +113,4 @@ TagMap.create!(
                   "muscle_post_id": 5
               }
           ]
-)
+ )

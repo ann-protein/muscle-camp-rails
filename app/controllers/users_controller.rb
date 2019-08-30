@@ -46,6 +46,15 @@ class UsersController < ApplicationController
     render status: 200
   end
 
+  def login
+    current_user = User.find_by(email: params[:email], password: params[:password])
+    return render json: {message: '認証に失敗しました'}, status: 401 unless current_user
+
+    response = {}
+    response["token"] = current_user.token
+    render json: response
+  end
+
   private
     def user_params
       params.require(:user).permit(:icon, :identity, :introduction, :name, :password, :unsubscribed)
