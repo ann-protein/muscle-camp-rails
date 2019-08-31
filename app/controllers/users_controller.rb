@@ -1,19 +1,29 @@
 class UsersController < ApplicationController
   def get_user_data
-    @user = User.find(params[:id])
+    @user = User.find_by(identity: params[:identity])
 
-    if !@user.unsubscribed
-      # 退会済みでない時にjsonを返す
-      render status: 200, :json => @user
+    if @user.nil?
+      # ユーザが見つからなかったとき
+      render status: 404
     else
-      render status: 400
+      if !@user.unsubscribed
+        # 退会済み
+        render status: 200, :json => @user
+      else
+        # 正常に見つかり、退会済みでないときjsonを返す
+        render status: 400
+      end
     end
   end
 
   def edit
     # 現在のプロフィールを返す
-    @user = User.find(params[:id])
-    render :json => @user
+    @user = User.find_by(token: params[:token])
+    if !@user.nil?
+      render :json => @user
+    else
+      render status: 404
+    end
   end
 
   def create
@@ -21,26 +31,30 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
+      # 成功
       render status: 200
     else
+      # 失敗
       render status: 400
     end
    end
 
   def update
     # editの後で入力された値で更新
-    @user = User.find(user_params)
+    @user = User.find_by(token: params[:token])
 
     if @user.update(user_params)
+      # 成功
       render status: 200
     else
+      # 失敗
       render status: 400
     end
   end
 
   def destroy
     # 退会処理
-    @user = User.find(params[:id])
+    @user = User.find_by(token: params[:token])
     @user.update(unsubsribed: true)
 
     render status: 200
