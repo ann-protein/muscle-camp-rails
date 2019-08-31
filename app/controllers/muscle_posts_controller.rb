@@ -1,4 +1,6 @@
 class MusclePostsController < ApplicationController
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+  before_action :user_authentication, only: [:create_muscle_post]
   def timeline
     # 要求数取得
     limit = params[:limit]
@@ -57,14 +59,8 @@ class MusclePostsController < ApplicationController
       render :json => {"error_msg":"value for key 'body_parts' should be an array of string"}, status: 422 and return
     end
 
-    # userの存在を検証
-    user = User.find_by(identity: params[:identity])
-    if user.nil?
-      render :json => {"error_msg":"User dont exist"}, status: 422 and return
-    end
-
     # Create MusclePost without committing
-    muscle_post = user.muscle_posts.new(muscle_post_params)
+    muscle_post = @user.muscle_posts.new(muscle_post_params)
 
     # body_partsの存在を検証
     if params.has_key?(:body_parts)
@@ -106,6 +102,15 @@ class MusclePostsController < ApplicationController
 
   def muscle_post_params
     params.permit(:title,:body)
+  end
+
+  def user_authentication
+    authenticate_with_http_token do |token, options|
+      @user = User.find_by(token: token)
+      if @user.nil?
+        render :json =>{'error':'Access denied'}, status: 403
+      end
+    end
   end
 
 end
