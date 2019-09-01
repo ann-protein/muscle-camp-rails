@@ -52,9 +52,6 @@ class MusclePostsController < ApplicationController
 
   def create_muscle_post
     # パラメータを検証
-    unless params[:identity].is_a? String
-      render :json => {"error_msg":"value for key 'identity' should be a string"}, status: 422 and return
-    end
     unless params[:body_parts].is_a? Array and params[:body_parts].all? { |x| x.is_a? String }
       render :json => {"error_msg":"value for key 'body_parts' should be an array of string"}, status: 422 and return
     end
