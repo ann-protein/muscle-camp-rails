@@ -102,11 +102,15 @@ class MusclePostsController < ApplicationController
   end
 
   def user_authentication
-    authenticate_with_http_token do |token, options|
+    # get `@user` by token
+    authenticate_with_http_token  do |token, options|
       @user = User.find_by(token: token)
-      if @user.nil?
-        render :json =>{'error':'Access denied'}, status: 403
-      end
+      return render :json => {'error_msg':'Access denied'}, status: :unauthorized if @user.nil?
+    end
+
+    # token dosen't exist
+    unless @user.present?
+      return render :json => {'error_msg':'Access denied, need token'}, status: :unauthorized
     end
   end
 
