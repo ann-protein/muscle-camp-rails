@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+  include ActionController::HttpAuthentication::Token::ControllerMethods
+  before_action :user_authentication, only: [:edit, :destroy]
+
   def get_user_data
     @user = User.find_by(identity: params[:identity])
 
@@ -18,12 +21,7 @@ class UsersController < ApplicationController
 
   def edit
     # 現在のプロフィールを返す
-    @user = User.find_by(token: params[:token])
-    if !@user.nil?
-      render :json => @user
-    else
-      render status: 404
-    end
+    render :json => @user
   end
 
   def create
@@ -41,8 +39,6 @@ class UsersController < ApplicationController
 
   def update
     # editの後で入力された値で更新
-    @user = User.find_by(token: params[:token])
-
     if @user.update(user_params)
       # 成功
       render status: 200
@@ -54,7 +50,6 @@ class UsersController < ApplicationController
 
   def destroy
     # 退会処理
-    @user = User.find_by(token: params[:token])
     @user.update(unsubsribed: true)
 
     render status: 200
@@ -67,6 +62,15 @@ class UsersController < ApplicationController
     response = {}
     response["token"] = current_user.token
     render json: response
+  end
+
+  def user_authentication
+    authenticate_with_http_token do |token, options|
+      @user = User.find_by(token: token)
+      if @user.nil?
+        render :json =>{'error':'Access denied'}, status: 403
+      end
+    end
   end
 
   private
