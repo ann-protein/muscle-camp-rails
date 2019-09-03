@@ -1,6 +1,6 @@
 class MusclePostsController < ApplicationController
   include ActionController::HttpAuthentication::Token::ControllerMethods
-  before_action :user_authentication, only: [:create_muscle_post]
+  before_action :user_authentication, only: [:create_muscle_post,:update_muscle_post,:destroy_muscle_post]
   def timeline
     # 要求数取得
     limit = params[:limit]
@@ -74,6 +74,52 @@ class MusclePostsController < ApplicationController
     end
 
     render :json => {"result":true}
+
+  end
+
+  def update_muscle_post
+
+    # パラメータを検証
+    unless params[:body_parts].is_a? Array and params[:body_parts].all? { |x| x.is_a? String }
+      render :json => {"error_msg":"value for key 'body_parts' should be an array of string"}, status: 422 and return
+    end
+
+    # MusclePostを取得
+    begin
+      muscle_post = @user.muscle_posts.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      return render :json => {"error_msg":"user dont have MusclePost[id=#{params[:id]}]"}, status: 422
+    end
+
+    # body_partsの存在を検証
+    if params.has_key?(:body_parts)
+      body_parts = BodyPart.where(name: params[:body_parts])
+      unless body_parts.pluck(:name).sort == params[:body_parts].sort
+        render :json => {"error_msg":"body_parts data false"}, status: 422 and return
+      end
+      muscle_post.body_parts = body_parts
+    end
+
+    # MusclePostを更新
+    muscle_post.update(muscle_post_params)
+
+    # MusclePostのデータを検証
+    return render :json => {'error_msg':"MusclePost data false,you should check 'title' and 'body'"}, status: 422 unless muscle_post.save
+
+    render :json => {"result":true}
+  end
+
+  def destroy_muscle_post
+    # MusclePostを取得
+    begin
+      muscle_post = @user.muscle_posts.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      return render :json => {"error_msg":"user dont have MusclePost[id=#{params[:id]}]"}, status: 422
+    end
+
+    muscle_post.destroy
+
+    render :json => {'result':true}
 
   end
 
