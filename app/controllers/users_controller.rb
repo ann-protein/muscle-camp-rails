@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   include ActionController::HttpAuthentication::Token::ControllerMethods
-  before_action :user_authentication, only: [:edit, :destroy]
+  before_action :user_authentication, only: [:edit, :update, :destroy]
 
   def get_user_data
     user_row = User.find_by(identity: params[:identity])
@@ -53,28 +53,37 @@ class UsersController < ApplicationController
 
   def destroy
     # 退会処理
-    @user.update(unsubsribed: true)
-
-    render status: 200
+    @user.unsubscribed = true
+    if @user.save
+      # 成功
+      render status: 200, json: {'meg': 'Success create user'}
+    else
+      # 失敗
+      render status: 400
+    end
   end
 
   def login
-    current_user = User.find_by(email: params[:email], password: params[:password])
-    return render json: {message: '認証に失敗しました'}, status: 401 unless current_user
+    current_user = User.find_by(email: params[:email])
+    if current_user && !current_user.unsubscribed && current_user.authenticate(params[:password])
+      current_user.token = create_token
+      if current_user.save!(:validate => false)
+        return render json: { token: current_user.token }, status: 200
+      end
+    end
 
-    response = {}
-    response["token"] = current_user.token
-    render json: response
+    return render json: {message: '認証に失敗しました'}, status: 401
+  end
+
+  ## ランダム文字列を作る
+  def create_token
+    return ((0..9).to_a + ("a".."z").to_a + ("A".."Z").to_a).sample(50).join
   end
 
   def user_authentication
     # get `@user` by token
-    p response.headers["Authorization"]
-    authenticate_with_http_token  do |token, options|
-      p token
-      p "----"
+    authenticate_with_http_token do |token, options|
       @user = User.find_by(token: token)
-      return render :json => {'error_msg':'Access denied'}, status: :unauthorized if @user.nil?
     end
 
     # token dosen't exist

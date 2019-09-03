@@ -5,8 +5,9 @@ Rails.application.routes.draw do
   post '/muscle_posts', to: "muscle_posts#create_muscle_post"
 
 
+  put '/users', to: "users#update"
   delete '/users', to: "users#destroy"
   post '/users/login', to: "users#login"
-  resources :users, only: [:create, :edit, :update] , param: :identity
+  resources :users, only: [:create, :edit] , param: :identity
   get '/users/:identity',    to: "users#get_user_data"
 end
