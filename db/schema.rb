@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_21_145204) do
+ActiveRecord::Schema.define(version: 2019_08_30_165313) do
 
   create_table "body_parts", force: :cascade do |t|
     t.string "name", null: false
@@ -46,7 +46,10 @@ ActiveRecord::Schema.define(version: 2019_08_21_145204) do
     t.boolean "unsubscribed", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "token"
+    t.string "email", null: false
     t.index ["identity"], name: "index_users_on_identity", unique: true
+    t.index ["token"], name: "index_users_on_token", unique: true
   end
 
 end

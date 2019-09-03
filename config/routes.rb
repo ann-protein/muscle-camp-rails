@@ -3,4 +3,9 @@ Rails.application.routes.draw do
   get '/muscle_posts', to: "muscle_posts#timeline"
   get '/muscle_posts/:id', to: "muscle_posts#get_muscle_post"
   post '/muscle_posts', to: "muscle_posts#create_muscle_post"
+
+  post '/users/login',    to: "users#login"
+
+  resources :users, only: [:create, :edit, :update, :destroy]
+  get '/users/:id',    to: "users#get_user_data"
 end
