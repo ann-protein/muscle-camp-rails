@@ -2,6 +2,7 @@ class User < ApplicationRecord
   validates :identity, uniqueness: true
   validates :name, presence: true
   validates :password, presence: true, length: { minimum: 5 }
+  attribute :unsubscribed, :boolean, default: -> { false }
   #validates :HalfSize_only
   has_many :muscle_posts
   has_secure_token
