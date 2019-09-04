@@ -7,7 +7,7 @@ class UsersController < ApplicationController
 
     if user_row.nil?
       # ユーザが見つからなかったとき
-      render status: 404
+      render :json => {"error_msg": "Not found"}, status: 404
     else
       if !user_row.unsubscribed
         # 正常に見つかり、退会済みでないときjsonを返す
@@ -33,7 +33,7 @@ class UsersController < ApplicationController
 
     if @user.save
       # 成功
-      render status: 200, json: {'meg': 'Success create user'}
+      render status: 200, json: {'massage': 'Success create user'}
     else
       # 失敗
       render status: 400
@@ -44,7 +44,7 @@ class UsersController < ApplicationController
     # editの後で入力された値で更新
     if @user.update(user_params)
       # 成功
-      render status: 200
+      render status: 200, json: {'massage': 'Success create user'}
     else
       # 失敗
       render status: 400
@@ -56,7 +56,7 @@ class UsersController < ApplicationController
     @user.unsubscribed = true
     if @user.save
       # 成功
-      render status: 200, json: {'meg': 'Success create user'}
+      render status: 200, json: {'message': 'Success create user'}
     else
       # 失敗
       render status: 400
