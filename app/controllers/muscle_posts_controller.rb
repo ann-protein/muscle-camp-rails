@@ -60,35 +60,21 @@ class MusclePostsController < ApplicationController
     # Create MusclePost without committing
     muscle_post = @user.muscle_posts.new(muscle_post_params)
 
-    # body_partsの存在を検証(存在しない場合上で消えてそう)
-    # if params.has_key?(:body_parts)
-    #   body_parts = BodyPart.where(name: params[:body_parts])
-    #   unless body_parts.pluck(:name).sort == params[:body_parts].sort
-    #     render :json => {"error_msg":"body_parts data false"}, status: 422 and return
-    #   end
-    #   muscle_post.body_parts << body_parts
-    # end
-
     db_body_parts = BodyPart.where(name: _body_parts)
-                        .pluck(:id, :name).transpose
+    db_body_parts_name = db_body_parts.pluck(:name)
 
-    unless (_body_parts - db_body_parts[1]).empty?
+    unless (_body_parts - db_body_parts_name).empty?
       render :json => {"error_msg":"body_parts data false"}, status: 422 and return
     end
+
+    muscle_post.body_parts = db_body_parts
 
     # MusclePostのデータを検証
     unless muscle_post.save
       render :json => {'error_msg':"MusclePost data false,you should check 'title' and 'body'"}, status: 422 and return
     end
 
-    # タグのマッピングを保存
-    db_body_parts[0].each do |body_part_id|
-      parts = muscle_post.tag_maps.new(body_part_id:body_part_id)
-      parts.save()
-    end
-
     render :json => {"result":true}
-
   end
 
   private
@@ -117,10 +103,9 @@ class MusclePostsController < ApplicationController
 
   def user_authentication
     # get `@user` by token
-    p
     authenticate_with_http_token  do |token, options|
-      p token
       @user = User.find_by(token: token)
+      return render :json => {'error_msg':'Access denied'}, status: :unauthorized if @user.nil?
     end
 
     # token dosen't exist

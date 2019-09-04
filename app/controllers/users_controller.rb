@@ -84,6 +84,7 @@ class UsersController < ApplicationController
     # get `@user` by token
     authenticate_with_http_token do |token, options|
       @user = User.find_by(token: token)
+      return render :json => {'error_msg':'Access denied'}, status: :unauthorized if @user.nil?
     end
 
     # token dosen't exist
