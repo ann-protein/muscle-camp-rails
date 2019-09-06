@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 2019_08_30_165313) do
     t.string "identity", null: false
     t.text "introduction", null: false
     t.string "name", null: false
-    t.string "password", null: false
+    t.string "password_digest", null: false
     t.boolean "unsubscribed", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -3,137 +3,205 @@ swagger: '2.0'
 info:
   version: "1.0.0"
   title: Muscle Camp
+host: localhost:3000
+basePath: /
+
+
+securityDefinitions:
+  tokenAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+
+
+definitions:
+  User:
+    properties:
+      icon:
+        type: string
+        format: byte
+        example: ""
+      identity:
+        type: string
+        example: kinnniku
+      introduction:
+        type: string
+        example: 自己紹介
+      name:
+        type: string
+        example: 筋肉マン
+      email:
+        type: string
+        example: kinniku@ynu.ac.jp
+  Account:
+    properties:
+      user:
+        $ref: "#/definitions/User"
+      password:
+        type: string
+        format: password
+        example: password
+  MusclePostBody:
+    properties:
+      title:
+        type: string
+        example: 腕立て
+      body:
+        type: string
+        example: 腕立て千回
+      body_parts:
+        type: array
+        items:
+          type: string
+          example: 腕
+  MusclePost:
+    properties:
+      id:
+        description: 投稿id
+        type: integer
+        format: int32
+      icon:
+        type: string
+        format: byte
+        example: ""
+      identity:
+        type: string
+        example: kinnniku
+      name:
+        type: string
+        example: 筋肉マン
+      muscle_post_body:
+        $ref: "#/definitions/MusclePostBody"
+  Unauthorized:
+    type: object
+    properties:
+      error_msg:
+        type: string
+        example: Access denied
+  NotFound:
+    type: object
+    properties:
+      error_msg:
+        type: string
+        example: Not found
+  Forbidden:
+    type: object
+    properties:
+      error_msg:
+        type: string
+        example: Forbidden
+  Success:
+    type: object
+    properties:
+      massage:
+        type: string
+        example: Success  
 
 paths:
   /users:
-  
     post:
       description: |
         ユーザ登録
-
       parameters:
         - name: body
           in: body
           schema:
             type: object
             properties:
-              icon:
-                type: string
-                format: byte
-                example: ""
-              identity:
-                type: string
-                example: kinnniku
-              introduction:
-                type: string
-                example: 自己紹介
-              name:
-                type: string
-                example: 筋肉マン
-              password:
-                type: string
-                format: password
-                example: password
-
+              account:
+                $ref: "#/definitions/Account"
       responses:
         200:
-          description: ユーザ登録成否
+          description: ユーザ登録成功
           schema:
-            type: object
-            properties:
-              result:
-                type: boolean
-                example: true
-                
-  /users/{id}:
-  
-    get:
-      description: |
-        ユーザ情報取得
-
-      parameters:
-        - name: id
-          in: path
-          description: ユーザ名
-          required: true
-          type: string
-                
-      responses:
-        200:
-          description: Successful responses
-          schema:
-            type: object
-            properties:
-              icon:
-                type: string
-                format: byte
-                example: ""
-              identity:
-                type: string
-                example: kinnniku
-              introduction:
-                type: string
-                example: 自己紹介
-              name:
-                type: string
-                example: 筋肉マン
-    post:
+            $ref: '#/definitions/Success'
+    
+    put:
       description: |
         ユーザ情報編集
-      
+      security:
+        - tokenAuth: [] 
       parameters:
-        - name: id
-          in: path
-          description: ユーザ名
-          required: true
-          type: string
-          
         - name: user
           in: body
           schema:
             type: object
             properties:
-              icon:
-                type: string
-                format: byte
-                example: ""
-              identity:
-                type: string
-                example: kinnniku
-              introduction:
-                type: string
-                example: 自己紹介
-              name:
-                type: string
-                example: 筋肉マン
-              password:
-                type: string
-                format: password
-                example: password
-                
+              user:
+                $ref: "#/definitions/User"
       responses:
         200:
-          description: Successful responses
+          description: ユーザ編集成功
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: 認証失敗
+          schema:
+            $ref: "#/definitions/Unauthorized"
           
     delete:
       description: ユーザ削除
+      security:
+        - tokenAuth: [] 
+      responses:
+        200:
+          description: ユーザ削除成功
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: 認証失敗
+          schema:
+            $ref: "#/definitions/Unauthorized"
+                
+  /users/{identity}:
+    get:
+      description: |
+        ユーザ情報取得
       parameters:
-        - name: id
+        - name: identity
           in: path
           description: ユーザ名
           required: true
           type: string
-          
       responses:
         200:
-          description: ユーザ削除成否
+          description: Successful responses
           schema:
             type: object
             properties:
-              result:
-                type: boolean
-                example: true
+              user:
+                $ref: "#/definitions/User"
+        404:
+          description: ユーザが見つからない
+          schema:
+            $ref: '#/definitions/NotFound'
                 
+  /users/login:
+    post:
+      description: ユーザ認証
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: kinniku@ynu.ac.jp
+              password:
+                type: string
+                format: password
+                example: password
+      responses:
+        200:
+          description: Successful responses
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                
+    
   /muscle_posts:
     get:
       description: 投稿取得(タイムライン用)
@@ -144,7 +212,6 @@ paths:
           in: query
           description: 投稿取得数上限
           required: true
-                
       responses:
         200:
           description: Successful responses
@@ -154,63 +221,33 @@ paths:
               muscle_posts:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    icon:
-                      type: string
-                      format: byte
-                      example: ""
-                    identity:
-                      type: string
-                      example: kinnniku
-                    name:
-                      type: string
-                      example: 筋肉マン
-                    title:
-                      type: string
-                      example: 腕立て
-                    body:
-                      type: string
-                      example: 腕立て千回
-                    body_parts:
-                      type: array
-                      items:
-                        type: string
-                        example: 腕
+                  $ref: "#/definitions/MusclePost"
                 
     post:
       description: 投稿
-      
+      security:
+        - tokenAuth: [] 
       parameters:
         - name: body
           in: body
           schema:
             type: object
             properties:
-              identity:
-                type: string
-                example: kinnniku
-              title:
-                type: string
-                example: 腕立て
-              body:
-                type: string
-                example: 腕立て千回
-              body_parts:
-                type: array
-                items:
-                  type: string
-                  example: 腕
-                
+              muscle_post:
+                $ref: "#/definitions/MusclePostBody"
       responses:
-          200:
-            description: Successful responses
+        200:
+          description: 投稿削除成功
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: 認証失敗
+          schema:
+            $ref: "#/definitions/Unauthorized"
           
-  /mucle_posts/{id}:
-  
+  /muscle_posts/{id}:
     get:
       description: 投稿取得
-      
       parameters:
         - name: id
           in: path
@@ -218,38 +255,24 @@ paths:
           required: true
           type: integer
           format: int32
-                
       responses:
         200:
-          description: Successful responses
+          description: 投稿取得
           schema:
             type: object
             properties:
-              icon:
-                type: string
-                format: byte
-                example: ""
-              identity:
-                type: string
-                example: kinnniku
-              name:
-                type: string
-                example: 筋肉マン
-              title:
-                type: string
-                example: 腕立て
-              body:
-                type: string
-                example: 腕立て千回
-              body_parts:
-                type: array
-                items:
-                  type: string
-                  example: 腕
+              muscle_post:
+                $ref: "#/definitions/MusclePost"
+        404:
+          description: 投稿が見つからない
+          schema:
+            $ref: '#/definitions/NotFound'
+          
         
-    post:
+    put:
       description: 投稿編集
-      
+      security:
+        - tokenAuth: [] 
       parameters:
         - name: id
           in: path
@@ -263,30 +286,46 @@ paths:
           schema:
             type: object
             properties:
-              identity:
-                type: string
-                example: kinnniku
-              title:
-                type: string
-                example: 腕立て
-              body:
-                type: string
-                example: 腕立て千回
-              body_parts:
-                type: array
-                items:
-                  type: string
-                  example: 腕
-                  
+              muscle_post:
+                $ref: "#/definitions/MusclePostBody"
       responses:
         200:
-          description: 投稿編集成否
+          description: 投稿編集成功
           schema:
-            type: object
-            properties:
-              result:
-                type: boolean
-                example: true
+            $ref: '#/definitions/Success'
+        401:
+          description: 認証失敗
+          schema:
+            $ref: "#/definitions/Unauthorized"
+        403:
+          description: 編集権限がないor存在しない
+          schema:
+            $ref: "#/definitions/Forbidden"
+    
+    delete:
+      description: 投稿削除
+      security:
+        - tokenAuth: [] 
+      parameters:
+        - name: id
+          in: path
+          description: 投稿id
+          required: true
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: 投稿削除成功
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: 認証失敗
+          schema:
+            $ref: "#/definitions/Unauthorized"    
+        403:
+          description: 編集権限がないor存在しない
+          schema:
+            $ref: "#/definitions/Forbidden" 
   
     
     
