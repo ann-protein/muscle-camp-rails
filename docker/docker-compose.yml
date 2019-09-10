@@ -7,12 +7,10 @@ services:
       MYSQL_USER: ${USERNAME}
       MYSQL_PASSWORD: ${USERPASS}
       MYSQL_ROOT_PASSWORD: ${ROOTPASS}
-    ports:
-      - "3306:3306"
 
   web:
     build: .
     ports:
-      - "3000:80"
-    links:
+      - "80:80"
+    depends_on:
       - db
