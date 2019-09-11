@@ -1,16 +1,8 @@
 version: '3'
 services:
-  db:
-    image: mysql:8.0.17
-    environment:
-      MYSQL_DATABASE: ${DATABASE}
-      MYSQL_USER: ${USERNAME}
-      MYSQL_PASSWORD: ${USERPASS}
-      MYSQL_ROOT_PASSWORD: ${ROOTPASS}
-
   web:
     build: .
     ports:
       - "80:80"
-    depends_on:
-      - db
+    environment:
+      DATABASE_ENDPOINT: ${DATABASE_ENDPOINT}
