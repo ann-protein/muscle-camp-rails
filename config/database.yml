@@ -23,9 +23,9 @@ test:
 production:
   adapter: mysql2
   encoding: utf8
-  database: Rails.application.credentials.mysql[:database]
+  database: <%= Rails.application.credentials.mysql[:database] %>
   pool: 32
   timeout: 5000
-  username: Rails.application.credentials.mysql[:username]
-  password: Rails.application.credentials.mysql[:password]
-  host: ENV["DATABASE_ENDPOINT"]
+  username: <%= Rails.application.credentials.mysql[:username] %>
+  password: <%= Rails.application.credentials.mysql[:password] %>
+  host: <%= ENV["DATABASE_ENDPOINT"] %>
