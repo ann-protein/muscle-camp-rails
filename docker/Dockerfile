@@ -40,6 +40,12 @@ RUN bundle install
 # ポート開放
 EXPOSE 80
 
+# 権限変更
+WORKDIR /home/app/
+RUN chown -R app muscle-camp-rails
+WORKDIR /home/app/muscle-camp-rails
+RUN chmod u+x bin/rails
+
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
