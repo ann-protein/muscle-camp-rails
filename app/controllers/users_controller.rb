@@ -77,7 +77,7 @@ class UsersController < ApplicationController
 
   ## ランダム文字列を作る
   def create_token
-    return ((0..9).to_a + ("a".."z").to_a + ("A".."Z").to_a).sample(50).join
+    return ((0..9).to_a + ("a".."z").to_a + ("A".."Z").to_a).sample(24).join
   end
 
   def user_authentication

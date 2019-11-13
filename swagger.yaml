@@ -13,6 +13,8 @@ securityDefinitions:
     name: Authorization
     in: header
 
+schemes: 
+  - http
 
 definitions:
   User:
